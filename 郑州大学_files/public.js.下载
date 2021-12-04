@@ -1,0 +1,318 @@
+$(function () {
+  if (window.navigator.userAgent.indexOf("compatible") !== -1) {
+    $(".compatibility-tips").animate({
+      bottom: 0
+    }, "normal", "linear");
+  }
+
+  var scrollUp = document.createElement('div');
+  $(scrollUp).addClass('scrollUp');
+  $('body').append(scrollUp);
+  $(scrollUp).on('click', function () {
+    $('html,body').animate({
+      scrollTop: 0
+    }, 300)
+  })
+
+
+  $(window).on('scroll', function () {
+    scrollTopToggle();
+  });
+  scrollTopToggle();
+
+  function scrollTopToggle() {
+    var scroll = $(window).scrollTop();
+    if (scroll < 300) {
+      $(scrollUp).fadeOut();
+    } else {
+      $(scrollUp).fadeIn();
+    }
+  }
+
+  $("#tips-close").click(function () {
+    $(".compatibility-tips").animate({
+      bottom: "-140px"
+    }, "normal", "linear");
+  });
+
+  // 加载导航
+  $(".nav").addClass("active");
+
+  // 动画加载
+  new WOW().init();
+
+  // 日期选择器 中文
+  if ($.fn.datetimepicker) {
+    $.fn.datetimepicker.dates["zh-CN"] = {
+      days: [
+        "星期日",
+        "星期一",
+        "星期二",
+        "星期三",
+        "星期四",
+        "星期五",
+        "星期六",
+        "星期日",
+      ],
+      daysShort: [
+        "周日",
+        "周一",
+        "周二",
+        "周三",
+        "周四",
+        "周五",
+        "周六",
+        "周日",
+      ],
+      daysMin: ["日", "一", "二", "三", "四", "五", "六", "日"],
+      months: [
+        "一月",
+        "二月",
+        "三月",
+        "四月",
+        "五月",
+        "六月",
+        "七月",
+        "八月",
+        "九月",
+        "十月",
+        "十一月",
+        "十二月",
+      ],
+      monthsShort: [
+        "一月",
+        "二月",
+        "三月",
+        "四月",
+        "五月",
+        "六月",
+        "七月",
+        "八月",
+        "九月",
+        "十月",
+        "十一月",
+        "十二月",
+      ],
+      today: "今天",
+      suffix: [],
+      meridiem: ["上午", "下午"],
+    };
+  }
+  // 搜索 打开
+  $(".nav-search-icon-open").click(function () {
+    $(".nav-search-box").addClass("active");
+    $(".nav-search-input").focus();
+  });
+
+  // 失焦关闭 输入框
+  // $(".nav-search-input").blur(function () {
+  //     $(".nav-search-box").removeClass('active')
+  // })
+
+  // // 搜索跳转
+  $(".nav-search-input").keyup(function (event) {
+    var ev = event || window.event;
+    var val = $(this).val();
+    if (ev.keyCode === 13) {
+      //用户触发回撤逻辑
+    }
+  });
+
+  // 移动端导航 打开导航
+  $(".mobile-nav-btn").click(function () {
+    if ($(".mobile-nav-box").hasClass('active')) {
+      $(".mobile-nav-box").removeClass("active");
+    } else {
+      $(".mobile-nav-box").addClass("active");
+    }
+    $(".mobile-nav-box").click(function () {
+      $(this).removeClass("active");
+    })
+    $(".mobile-nav-bottom-link").click(function (event) {
+      event.stopPropagation();
+    });
+  });
+
+  if(!!window.ActiveXObject || "ActiveXObject" in window){
+    $('.share').css('right', '15px');
+  }
+
+  // 一级导航点击保存状态
+  // $(".nav-list-one li").click(function () {
+  //   $(this).addClass("active").siblings("li").removeClass("active");
+  // });
+
+  // 移动端导航 关闭
+  $(".mobile-nav-close-btn").click(function () {
+    $(".mobile-nav-box").removeClass("active");
+  });
+
+  // pa 二级导航 显示隐藏
+  var hasNavTwoShow = null;
+
+  // 二级导航展示 显示逻辑
+  $(".nav-list-one li").hover(
+    function () {
+      hasNavTwoShow = clearTimeout(hasNavTwoShow);
+      var ind = $(this).index();
+      $(".nav-list-two").show().addClass("active");
+      $(".nav-list-two li")
+        .eq(ind)
+        .addClass("active")
+        .siblings("li")
+        .removeClass("active");
+    },
+    function () {
+      hasNavTwoShow = setTimeout(function () {
+        $(".nav-list-two").removeClass("active");
+        $(".nav-list-two li").removeClass("active");
+        $(".nav-list-two").hide();
+      }, 400);
+    }
+  );
+
+  // 二级导航展示 隐藏逻辑
+  $(".nav-list-two").hover(
+    function () {
+      hasNavTwoShow = clearTimeout(hasNavTwoShow);
+    },
+    function () {
+      hasNavTwoShow = setTimeout(function () {
+        $(".nav-list-two").removeClass("active");
+        $(".nav-list-two li").removeClass("active");
+        $(".nav-list-two").hide();
+      }, 400);
+    }
+  );
+
+  // 响应式二级导航展开
+  $(".mobile-view-two-nav").click(function () {
+    $(this).find(".mobile-view-two-nav-link").toggleClass("active");
+  });
+
+  var temp = 1;
+  var t = null;
+  var ef = effects;
+  $('body,html').height($('.index-top-banner').height() + 1);
+  $('.main-content').css({
+    height: '100vh',
+    overflow: 'hidden'
+  });
+
+  // 导航 吸顶
+  $(window).scroll(function () {
+    ef($(this).scrollTop());
+  });
+
+  $(window).resize(function (e) {
+    yn();
+  })
+
+  yn();
+
+  function yn() {
+    var w = $('body,html').width();
+    if ( w < 992 ) {
+      ef = function () { return };
+      $('.main-content').css('height', 'auto');
+    } else {
+      ef = effects;
+      $('.main-content').css('height', '100vh');
+      $('body,html').height($('.index-banner').height() + 1);
+    }
+  }
+
+  function effects(scrollY) {
+    if (scrollY > 0) {
+      if (temp) {
+        $(".nav").addClass("scroll");
+        temp = 0;
+        $('.main-content').css("top", 0);
+        t = setTimeout(function () {
+            $('body,html').height($('.main-content').height());
+            $('.main-content').css({
+              position: 'absolute',
+              "background-position-y": 'top',
+              height: 'auto'
+            });
+        }, 1000);
+      }
+    } else {
+      $(".nav").removeClass("scroll");
+      temp = 1;
+      $('.main-content').css({
+        top: '100%',
+        "background-position-y": '100vh',
+        height: '100vh'
+      });
+      clearTimeout(t);
+      $('body,html').height($('.index-top-banner').height() + 1);
+      $('.main-content').css('position', 'fixed');
+    }
+  }
+});
+
+// 新增校历，并打开
+function openImg() {
+  var imgsrc = "../img/zdxl.jpeg";
+  window.open(imgsrc);
+}
+
+var click1 = $('.nav-list-two>:nth-child(6) .text-left>:nth-child(3) a');
+var click2 = $('.nav-list-two>:nth-child(6) .text-left>:nth-child(4) a');
+var click3 = $('.nav-list-two>:nth-child(7) .text-left>:nth-child(1) a');
+var click4 = $('.nav-list-two>:nth-child(7) .text-left>:nth-child(2) a');
+var click5 = $('.nav-list-two>:nth-child(7) .text-left>:nth-child(3) a');
+
+var pathname = $(location).attr('pathname');
+
+if (pathname == '/kxyj.htm' || pathname == '/szdw1.htm') {
+  tab();
+}
+
+click1.on('click', function () {
+  document.cookie = 'gjj';
+  tab();
+})
+
+click2.on('click', function () {
+  document.cookie = 'bsj'
+  tab();
+})
+
+click3.on('click', function () {
+  document.cookie = 'zzys';
+  tab();
+})
+
+click4.on('click', function () {
+  document.cookie = 'spys';
+  tab();
+})
+
+click5.on('click', function () {
+  document.cookie = 'jcrc';
+  tab();
+})
+
+function tab() {
+  var flag = document.cookie;
+  if (flag == "gjj") {
+    $(".kxyj-platform-nav>:first-child").addClass("active").siblings().removeClass("active");
+    $(".kxyj-platform-swiper>:first-child").addClass("active").siblings().removeClass("active");
+  } else if (flag == "bsj") {
+    $(".kxyj-platform-nav>:last-child").addClass("active").siblings().removeClass("active");
+    $(".kxyj-platform-swiper>:last-child").addClass("active").siblings().removeClass("active");
+  } else if (flag == 'zzys') {
+    $('.teachers-tab-nav>:nth-child(1)').addClass("active").siblings().removeClass("active");
+    $('.tearchs-box-swiper>:nth-child(1)').addClass("active").siblings().removeClass("active");
+  } else if (flag == 'spys') {
+    $('.teachers-tab-nav>:nth-child(2)').addClass("active").siblings().removeClass("active");
+    $('.tearchs-box-swiper>:nth-child(2)').addClass("active").siblings().removeClass("active");
+  } else if (flag == 'jcrc') {
+    $('.teachers-tab-nav>:nth-child(3)').addClass("active").siblings().removeClass("active");
+    $('.tearchs-box-swiper>:nth-child(3)').addClass("active").siblings().removeClass("active");
+  } else {
+    flag = '';
+  }
+}
